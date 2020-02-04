@@ -1,0 +1,8 @@
+welcome: "Welcome to Loan Shark!"
+principle: "What is the principle owed on the loan?"
+apr: "What is the annual percentage rate (APR)?"
+duration: "What is the loan duration? (ex. type 60m for 60 months or 5y for 5 years)"
+valid_number: "That is not a valid number, please try again"
+payment: "Based on what you've told me, your monthly payment should be "
+another: "Do you want to perform another calculation? (Y to calculate again)"
+exit: "Thank you for using Loan Shark! Goodbye!"

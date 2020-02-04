@@ -1,0 +1,12 @@
+welcome: "Welcome to Calcutron 5000! What's your name?"
+valid_name: "Make sure to enter a valid name"
+left_operand: "What is the left operand?"
+right_operand: "What is the right operand?"
+valid_number: "That is not a valid number, please try again"
+op_prompt: "What operation would you like to perform?\n
+1) add\n
+2) subtract\n
+3) multiply\n
+4) divide"
+another: "Do you want to perform another calculation? (Y to calculate again)"
+exit: "Thank you for using Calcutron 5000! Goodbye!"
