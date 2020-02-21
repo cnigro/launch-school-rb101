@@ -1,3 +1,5 @@
+require 'pry'
+
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
@@ -43,9 +45,36 @@ def player_move!(brd)
   brd[square] = PLAYER_MARKER
 end
 
+def computer_move!(brd)
+  square = available_squares(brd).sample
+  brd[square] = COMPUTER_MARKER
+end
+
+def board_full?(brd)
+  available_squares(brd).empty?
+end
+
+def someone_won?(brd)
+  false
+end
+
+
 board = initialize_board
 display_board(board)
 
-player_move!(board)
-puts board.inspect
-display_board(board)
+loop do
+  player_move!(board)
+  computer_move!(board)
+  display_board(board)
+  break if someone_won?(board) || board_full?(board)
+end
+
+
+
+
+
+
+
+
+
+
