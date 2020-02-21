@@ -23,7 +23,7 @@ def joinor(arr, delimiter = ', ', conjunction = 'or')
 end
 
 # rubocop:disable Metrics/AbcSize
-def display_board(brd)
+def display_board(brd, scr)
   system 'clear'
   puts "Player is #{PLAYER_MARKER}, Computer is #{COMPUTER_MARKER}"
   puts ""
@@ -38,6 +38,8 @@ def display_board(brd)
   puts "     |     |"
   puts "  #{brd[7]}  |  #{brd[8]}  |  #{brd[9]}"
   puts "     |     |"
+  puts ""
+  puts "Player score: #{scr['Player']}, Computer score: #{scr['Computer']}"
   puts ""
 end
 # rubocop:enable Metrics/AbcSize
@@ -63,8 +65,26 @@ def player_move!(brd)
   brd[square] = PLAYER_MARKER
 end
 
+def find_at_risk_square(line, board)
+  if board.values_at(*line).count(PLAYER_MARKER) == 2
+    # binding.pry
+    board.select { |k, v| line.include?(k) && v == INITIAL_MARKER }.keys.first
+  else
+    nil
+  end
+end
+
 def computer_move!(brd)
-  square = available_squares(brd).sample
+  square = nil
+  WINNING_LINES.each do |line|
+    square = find_at_risk_square(line, brd)
+    break if square
+  end
+  
+  if !square
+    square = available_squares(brd).sample
+  end
+
   brd[square] = COMPUTER_MARKER
 end
 
@@ -87,11 +107,18 @@ def detect_winner(brd)
   nil
 end
 
+scores = {'Player' => 0, 'Computer' => 0}
+winner = ''
+
+def increment_score(scores, plyr)
+  scores[plyr] += 1
+end
+
 loop do
   board = initialize_board
 
   loop do
-    display_board(board)
+    display_board(board, scores)
 
     player_move!(board)
     break if someone_won?(board) || board_full?(board)
@@ -100,17 +127,23 @@ loop do
     break if someone_won?(board) || board_full?(board)
   end
 
-  display_board(board)
+  display_board(board, scores)
 
   if someone_won?(board)
-    prompt "#{detect_winner(board)} won!"
+    winner = detect_winner(board)
+    prompt "#{winner} won!"
+    increment_score(scores, winner)
   else
     prompt 'It\'s a tie!'
   end
 
-  prompt 'How about another round? (y or n)'
-  answer = gets.chomp
-  break unless answer.downcase.start_with?('y')
+  prompt "Get ready for the next round! Press any key to begin."
+  answer = gets
+  if scores.has_value?(5)
+    prompt "The winner is #{winner}"
+    break
+  end
+  # break unless answer.downcase.start_with?('y')
 end
 
 prompt "Thanks for playing! Goodbye!"
