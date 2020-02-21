@@ -9,6 +9,8 @@ def prompt(msg)
 end
 
 def display_board(brd)
+  system 'clear'
+  puts "Player is #{PLAYER_MARKER}, Computer is #{COMPUTER_MARKER}"
   puts ""
   puts "     |     |"
   puts "  #{brd[1]}  |  #{brd[2]}  |  #{brd[3]}"
@@ -76,22 +78,31 @@ def detect_winner(brd)
   nil
 end
 
+loop do
 board = initialize_board
 
-loop do
+  loop do
+    display_board(board)
+
+    player_move!(board)
+    break if someone_won?(board) || board_full?(board)
+
+    computer_move!(board)
+    break if someone_won?(board) || board_full?(board)
+  end
+
   display_board(board)
 
-  player_move!(board)
-  break if someone_won?(board) || board_full?(board)
+  if someone_won?(board)
+    prompt "#{detect_winner(board)} won!"
+  else
+    prompt "It's a tie!"
+  end
 
-  computer_move!(board)
-  break if someone_won?(board) || board_full?(board)
+  prompt "How about another round? (y or n)"
+  answer = gets.chomp
+  break unless answer.downcase.start_with?('y')
 end
 
-display_board(board)
+prompt "Thanks for playing! Goodbye!"
 
-if someone_won?(board)
-  prompt "#{detect_winner(board)} won!"
-else
-  prompt "It's a tie!"
-end
