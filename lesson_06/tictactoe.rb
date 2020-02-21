@@ -1,4 +1,5 @@
 require 'pry'
+require 'pry-byebug'
 
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
@@ -50,8 +51,34 @@ def initialize_board
   new_board
 end
 
+def choose_starting_player
+  prompt "Who will go first? ('computer' or 'player')"
+  loop do
+    answer = gets.chomp
+    if answer.capitalize.start_with?('P')
+      return 'Player'
+    elsif answer.capitalize.start_with?('C')
+      return 'Computer'
+    else
+      prompt "Not a valid selection. Choose 'player' or 'computer'"
+    end
+  end
+end
+
 def available_squares(brd)
   brd.keys.select { |n| brd[n] == INITIAL_MARKER }
+end
+
+def alternate_player(current_player)
+  current_player == 'Player' ? 'Computer' : 'Player'
+end
+
+def take_turn!(board, current_player)
+  if current_player == 'Player'
+    player_move!(board)
+  else
+    computer_move!(board)
+  end
 end
 
 def player_move!(brd)
@@ -132,14 +159,12 @@ end
 
 loop do
   board = initialize_board
+  current_player = choose_starting_player
 
   loop do
     display_board(board, scores)
-
-    player_move!(board)
-    break if someone_won?(board) || board_full?(board)
-
-    computer_move!(board)
+    take_turn!(board, current_player)
+    current_player = alternate_player(current_player)
     break if someone_won?(board) || board_full?(board)
   end
 
