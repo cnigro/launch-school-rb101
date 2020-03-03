@@ -37,7 +37,7 @@ def display_cards(table, final=false)
     dealer.size.times do |n|
       puts "\t#{dealer[n][1]} of #{dealer[n][0]}"
     end
-    puts "\tTotal: #{dealer}"
+    puts "\tTotal: #{total(dealer)}"
   else
     (dealer.size - 1).times do |n|
       puts "\t#{dealer[n + 1][1]} of #{dealer[n + 1][0]}"
@@ -50,14 +50,13 @@ def total(cards)
   values = cards.map { |card| card[1] }
   sum = 0
   values.each do |value|
-    sum += case value
-           when "Ace"
-             11
-           when ["Jack", "Queen", "King", "Ace"].include?(value)
-             10
-           else
-             value.to_i
-           end
+    if value == "Ace"
+      sum += 11
+    elsif ["Jack", "Queen", "King", "Ace"].include?(value)
+      sum += 10
+    else 
+      sum += value.to_i
+    end
   end
 
   values.select { |value| value == 'Ace' }.count.times do
@@ -70,7 +69,7 @@ def busted?(player)
   total(player) > 21
 end
 
-def won?(player)
+def twenty_one?(player)
   total(player) == 21
 end
 
@@ -89,6 +88,7 @@ end
 
 state = :player_turn
 table = initialize_game
+score = { player: 0, dealer: 0 }
 
 # Game Loop
 loop do
@@ -113,22 +113,19 @@ loop do
         if busted?(table[:player])
           state = :player_bust
           break
-        elsif won?(table[:player])
+        elsif twenty_one?(table[:player])
           state = :player_win
           break
         end
       end
     end
   when :player_bust
-    prompt("Player busted!")
-    prompt("Final Hand")
-    display_cards(table, true)
-    state = :game_end
+    prompt("You busted!")
+    state = :dealer_win
   when :player_win
     prompt("You win!")
-    prompt("Would you like to play again?")
-    answer = gets.chomp
-    state = :quit unless answer.casecmp?('y')
+    score[:player] += 1
+    state = :game_end
   when :dealer_turn
     loop do
       display_cards(table)
@@ -139,33 +136,41 @@ loop do
         if busted?(table[:dealer])
           state = :dealer_bust
           break
-        elsif won?(table[:dealer])
+        elsif twenty_one?(table[:dealer])
           state = :dealer_win
           break
         end
       else
         prompt("Dealer chose to stay!")
-        state = :game_end
+        state = :stand
         break
       end
     end
   when :dealer_bust
-    display_cards(table, true)
     prompt("Dealer busted!")
-    state = :game_end
+    state = :player_win
   when :dealer_win
-    display_cards(table, true)
     prompt("Dealer wins! Better luck next time!")
+    score[:dealer] += 1
     state = :game_end
+  when :stand
+    display_cards(table, true)
+    state = if total(table[:dealer]) > total(table[:player])
+              :dealer_win
+            else
+              :player_win
+            end
   when :game_end
-    if total(table[:dealer]) > total(table[:player])
-      prompt("Dealer wins! Better luck next time!")
-    else
-      prompt("You win!")
-    end
-    prompt("Would you like to play again?")
-    answer = gets.chomp
-    state = answer.casecmp?('y') ? :begin : :quit
+    display_cards(table, true)
+    prompt("Score")
+    prompt("Player: #{score[:player]}, Dealer: #{score[:dealer]}")
+    state = if score[:player] == 5 || score[:dealer] == 5
+              :quit
+            else
+              prompt("Would you like to play again?")
+              answer = gets.chomp
+              state = answer.casecmp?('y') ? :begin : :quit
+            end
   when :quit
     prompt("Thanks for playing 21! Goodbye!")
     break
