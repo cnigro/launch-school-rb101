@@ -51,19 +51,12 @@
 def transpose(matrix)
   # stolen from ThoughtCo
   t = Marshal.load(Marshal.dump(matrix))
-
-  size = t.size
-
   t.size.times do |row|
-    size.times do |col|
+    row.times do |col|
       delta = t.size - size
-      t[row][col + delta], t[col + delta][row] = t[col + delta][row], t[row][col + delta]
+      t[row][col], t[col][row] = t[col][row], t[row][col]
     end
-    size -= 1
   end
-  p t
-  p matrix
-  t
 end
 
 # Examples
