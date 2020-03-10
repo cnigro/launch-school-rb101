@@ -53,10 +53,10 @@ def transpose(matrix)
   t = Marshal.load(Marshal.dump(matrix))
   t.size.times do |row|
     row.times do |col|
-      delta = t.size - size
       t[row][col], t[col][row] = t[col][row], t[row][col]
     end
   end
+  t
 end
 
 # Examples
