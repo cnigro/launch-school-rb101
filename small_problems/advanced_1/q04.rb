@@ -16,6 +16,7 @@ def transpose(matrix)
       t[row][col], t[col][row] = t[col][row], t[row][col]
     end
   end
+  t
 end
 
 # Examples:
