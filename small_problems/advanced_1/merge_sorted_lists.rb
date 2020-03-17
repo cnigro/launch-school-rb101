@@ -61,9 +61,6 @@
 =end
 
 def merge(left, right)
-  return left if (right.empty? && left.empty?) || right.empty?
-  return right if left.empty?
-
   l_copy = left.dup
   r_copy = right.dup
 
@@ -80,7 +77,6 @@ def merge(left, right)
   end
 
   merged += l_copy += r_copy
-  merged
 end
 
 # Examples:
