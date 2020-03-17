@@ -44,10 +44,6 @@
     - copy of array2
     - new empty array called 'merged' that will be used to store the
       combined elements from the inputs
-  - If one array is longer than the other
-      - pad the shorter array with -1 until they are the same size. (Note: if
-        negative values were allowed, we could pad the array with some other
-        invalid value)
   - Loop until copy1 or copy2 is empty
       - If copy1[0] < copy2[0]
         - append copy1[0] to merged
@@ -65,39 +61,25 @@
 =end
 
 def merge(left, right)
-  return left if right.empty? && left.empty?
-  return left if right.empty?
+  return left if (right.empty? && left.empty?) || right.empty?
   return right if left.empty?
 
   l_copy = left.dup
   r_copy = right.dup
-  delta_size = (l_copy.size - r_copy.size).abs
 
   merged = []
 
-  if l_copy.size > r_copy.size
-    delta_size.times { r_copy.insert(0, -1) }
-  elsif l_copy.size < r_copy.size
-    delta_size.times { l_copy.insert(0, -1) }
-  end
-
   until l_copy.empty? || r_copy.empty? do
-    lnum = l_copy[0]
-    rnum = r_copy[0]
-
-    if lnum < rnum
+    if l_copy.first < r_copy.first
       merged << l_copy.shift
-    elsif lnum > rnum
+    elsif l_copy.first > r_copy.first
       merged << r_copy.shift
     else
       merged << l_copy.shift << r_copy.shift
     end
   end
 
-  merged += l_copy unless l_copy.empty?
-  merged += r_copy unless r_copy.empty?
-  merged.shift((left.size - right.size).abs)
-
+  merged += l_copy += r_copy
   merged
 end
 
